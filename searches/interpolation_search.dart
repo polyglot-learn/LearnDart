@@ -15,8 +15,11 @@ int interpolationSearch(List<int> sorted, int target) {
   int lo = 0, hi = sorted.length - 1;
   while (lo <= hi && target >= sorted[lo] && target <= sorted[hi]) {
     if (lo == hi) return sorted[lo] == target ? lo : -1;
-    final pos = lo +
-        ((target - sorted[lo]) * (hi - lo)) ~/ (sorted[hi] - sorted[lo]);
+    // Flat window: every value in [lo, hi] is equal, so the probe formula
+    // would divide by zero. The answer is lo if it matches, else absent.
+    if (sorted[hi] == sorted[lo]) return sorted[lo] == target ? lo : -1;
+    final pos =
+        lo + ((target - sorted[lo]) * (hi - lo)) ~/ (sorted[hi] - sorted[lo]);
     if (sorted[pos] == target) return pos;
     if (sorted[pos] < target) {
       lo = pos + 1;
@@ -30,5 +33,6 @@ int interpolationSearch(List<int> sorted, int target) {
 void main() {
   final data = [10, 12, 13, 16, 18, 19, 20, 21, 22, 23, 24, 33, 35, 42, 47];
   print(interpolationSearch(data, 18)); // 4
-  print(interpolationSearch(data, 5));  // -1
+  print(interpolationSearch(data, 5)); // -1
+  print(interpolationSearch([2, 2, 2, 2], 2)); // 0
 }
